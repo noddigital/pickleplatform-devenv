@@ -39,6 +39,7 @@ RUN mkdir .ssh && \
 RUN curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bash
 
 RUN .yarn/bin/yarn global add lerna firebase-tools
+RUN .yarn/bin/yarn global add @google-cloud/functions-emulator --ignore-engines
 
 EXPOSE 6000
 
