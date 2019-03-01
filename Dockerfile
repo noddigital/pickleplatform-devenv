@@ -40,6 +40,6 @@ RUN curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bas
 
 RUN .yarn/bin/yarn global add lerna firebase-tools
 
-EXPOSE 22
+EXPOSE 6000
 
 CMD ["/usr/sbin/sshd", "-D"]
