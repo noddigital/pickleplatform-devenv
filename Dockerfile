@@ -27,8 +27,8 @@ RUN echo 'export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.b
 
 RUN curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bash
 
-RUN .yarn/bin/yarn global add lerna firebase-tools babel-cli
-RUN .yarn/bin/yarn global add @google-cloud/functions-emulator --ignore-engines
+RUN npm install -g lerna firebase-tools babel-cli
+RUN npm install -g @google-cloud/functions-emulator --ignore-engines
 
 RUN echo 'alias hasura-console="hasura console --address 0.0.0.0 --no-browser"' >> .zshrc
 EXPOSE 6000
