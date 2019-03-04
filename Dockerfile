@@ -30,5 +30,5 @@ RUN curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bas
 RUN .yarn/bin/yarn global add lerna firebase-tools babel-cli
 RUN .yarn/bin/yarn global add @google-cloud/functions-emulator --ignore-engines
 
-RUN echo 'alias hasura-console="hasura --address 0.0.0.0 --no-browser"' >> .zshrc
+RUN echo 'alias hasura-console="hasura console --address 0.0.0.0 --no-browser"' >> .zshrc
 EXPOSE 6000
