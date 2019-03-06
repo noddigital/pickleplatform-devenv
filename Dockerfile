@@ -1,34 +1,47 @@
 FROM debian:stretch
 ENV TERM xterm
 
-RUN apt-get --yes update && \
-  apt-get --yes upgrade
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-RUN apt-get --yes install curl software-properties-common gnupg git-core locales sudo zsh apt-utils \
-  iputils-ping vim wget cron screen unzip
+RUN apt-get update \
+    && apt-get install -y curl software-properties-common gnupg git-core locales sudo zsh apt-utils \
+  iputils-ping vim wget cron screen unzip build-essential apt-transport-https \
+    && apt-get -y autoclean
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
-  apt-get --yes install nodejs
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 8.11.1
 
-ENV LANG="en_US.UTF-8" \
-    LANGUAGE="en_US:en" \
-    LC_ALL="en_US.UTF-8"
+RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh | bash
 
+RUN source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+ENV LANG="en_US.UTF-8"
 RUN locale-gen en_US.UTF-8
 
 WORKDIR /root
 
-RUN curl -o- -L https://yarnpkg.com/install.sh | bash
-RUN curl -OL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
+# yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+    && apt-get update \
+    && apt-get install -yq \
+        yarn --no-install-recommends \
+    && apt-get clean -yq \
+    && rm -rf /var/cache/apt/*
 
+# ZSH
+RUN curl -OL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 RUN bash install.sh && rm -rf install.sh
 
-RUN echo 'export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"' >> .zshrc
-
+# Hasura
 RUN curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bash
 
-RUN npm install -g lerna firebase-tools babel-cli
-RUN npm install -g @google-cloud/functions-emulator --ignore-engines
+RUN yarn global add lerna babel-cli
 
-RUN echo 'alias hasura-console="hasura console --address 0.0.0.0 --no-browser"' >> .zshrc
 EXPOSE 6000
